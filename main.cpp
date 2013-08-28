@@ -4,12 +4,12 @@
 const char* VertexShader=
 
 	"#version 330 \n"//opengl 3.3.
-	"layout(location=0) in vec2 coord;"//inputs information about initial vector location
+	"layout(location = 0) in vec2 coord;"//inputs information about initial vector location
 	"uniform vec2 displacement;"
 	"void main()"
 	"{"
-	"	vec2 position = coord +displacement"
-	"	gl_position = vec4(position, 0.0, 1.0);"
+	"	vec2 position = coord + displacement;"	 /*you forgot the semicolon after this statment*/
+	"	gl_Position = vec4(position, 0.0, 1.0);" /*gl_Position not gl_position*/
 	"}";
 
 
@@ -19,15 +19,16 @@ const char* FragmentShader=
 	"out vec3 color;"//exports information about the color to display on screen
 	"void main()"
 	"{"
-	"	color = vec3(1.0, 1.0, 0.0):"
+	"	color = vec3(1.0, 1.0, 0.0);" /*fail, you used a : instead of a ;*/
 	"}";
 
-
+/*you have to realize thet because the shaders are compiled by the gpu and not visual studio you
+  won't be warned/told by the computer of any errors in your shader code so revise it carefully*/
 
 int main()
 {
 	glfwInit();
-	glewInit();
+	
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE); //window is resizable
 
 
@@ -41,7 +42,9 @@ int main()
 	}
 	glfwMakeContextCurrent(openglWindow);
 	
-
+	/*initiate glew after the window is set to current*/
+	glewExperimental = true;
+	glewInit();
 
 
 	GLuint simpleVertexShader= glCreateShader (GL_VERTEX_SHADER); //creates an GLuint  shader using the vertex shader variable
@@ -73,7 +76,7 @@ int main()
 	{
 		-0.1f,-0.1f,
 		0.0f, 0.1f,
-		0.1f, 0.1f
+		0.1f, -0.1f /*changed .1 to -.1*/
 	};
 
 
@@ -87,8 +90,8 @@ int main()
 
 	
 
-	float verticalDisplacement=0;
-	float horizontalDisplacement=0;
+	float verticalDisplacement = 0;
+	float horizontalDisplacement = 0;
 
 	GLuint displacementHandle = glGetUniformLocation(simpleShaderProgram,"displacement");
 
@@ -105,9 +108,9 @@ int main()
 		if(glfwGetKey(openglWindow, GLFW_KEY_A)) horizontalDisplacement -= .0001f;
 
 		if(verticalDisplacement > 1.2f) verticalDisplacement=-1.1f;
-		if(verticalDisplacement > -1.2f) verticalDisplacement=1.1f;
+		if(verticalDisplacement < -1.2f) verticalDisplacement=1.1f; /*you used a > symbol instead of a < causing the triangle to constantly move up*/
 		if(horizontalDisplacement > 1.2f) horizontalDisplacement=-1.1f;
-		if(horizontalDisplacement > -1.2f) horizontalDisplacement=1.1f;
+		if(horizontalDisplacement < -1.2f) horizontalDisplacement=1.1f; /*you used a > symbol instead of a < causing the triangle to constantly move left*/
 
 
 
